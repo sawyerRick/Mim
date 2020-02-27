@@ -12,7 +12,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public class ClientCache {
 
     // 持有可用服务器信息
-    public static volatile ServerInfo serverInfoHolder;
+    public static volatile String server;
 
     // 当前持有的服务器Channel
     public static volatile NioSocketChannel SvSocketHolder;

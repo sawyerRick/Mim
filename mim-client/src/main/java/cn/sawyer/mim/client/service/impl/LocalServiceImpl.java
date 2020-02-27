@@ -1,6 +1,6 @@
 package cn.sawyer.mim.client.service.impl;
 
-import cn.sawyer.mim.client.service.MimClientService;
+import cn.sawyer.mim.client.service.LocalService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -9,8 +9,9 @@ import org.springframework.stereotype.Service;
  * @author: sawyer
  * @create: 2020-02-22 18:13
  **/
+
 @Service
-public class MimClientServiceImpl implements MimClientService {
+public class LocalServiceImpl implements LocalService {
 
     @Override
     public void printNormal(String msg) {

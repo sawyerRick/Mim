@@ -1,7 +1,7 @@
 package cn.sawyer.mim.client.handler;
 
 import cn.sawyer.mim.tool.enums.MsgType;
-import cn.sawyer.mim.client.service.MimClientService;
+import cn.sawyer.mim.client.service.LocalService;
 import cn.sawyer.mim.tool.protocol.MimProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -22,7 +22,7 @@ public class ClientMsgHandler extends ChannelInboundHandlerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(ClientMsgHandler.class);
 
     @Autowired
-    MimClientService service;
+    LocalService service;
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {

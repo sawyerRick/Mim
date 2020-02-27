@@ -32,7 +32,7 @@ public class ClientBootThread implements Runnable{
 
         Code loginCode = accountService.login(appConfig.getUserId(), appConfig.getUsername());
         if (loginCode.equals(Code.SUCCESS)) {
-            mimClient.start(ClientCache.serverInfoHolder);
+            mimClient.start(ClientCache.server);
         }
     }
 }

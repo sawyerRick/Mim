@@ -27,6 +27,7 @@ public class ServerController {
 
     @PostMapping("pubMsg")
     public Result pubMsg(@RequestBody PubReq pubReq) {
+        System.out.println("推送请求：" + pubReq);
         connService.send(pubReq);
 
         return Results.newResult(Code.SUCCESS);

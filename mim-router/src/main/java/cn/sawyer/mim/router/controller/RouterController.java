@@ -47,7 +47,7 @@ public class RouterController {
 //    }
 
     // 群发
-    @PostMapping("pub")
+    @PostMapping("pubMsg")
     public Result publicMsg(@RequestBody PubReq pubReq) {
         System.out.println("群发请求:" + pubReq);
         boolean online = accountService.checkOnline(pubReq.getSrcId());
@@ -80,6 +80,8 @@ public class RouterController {
         } else if (loginCode.equals(Code.DUPLICATE_LOGIN)) {
             // 重复登录，强制下线
             accountService.logout(loginReq.getUserId());
+            String server = accountService.route(loginReq.getUserId());
+            data.put("server", server);
         }
 
         return Results.newResult(Code.SUCCESS, data);

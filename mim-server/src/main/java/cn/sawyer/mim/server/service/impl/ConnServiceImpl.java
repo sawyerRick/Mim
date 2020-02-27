@@ -22,12 +22,18 @@ public class ConnServiceImpl implements ConnService {
     public void send(PubReq pubReq) {
         MimProtocol protocol = new MimProtocol();
         protocol.setType(MsgType.MSG_RESP);
-        protocol.setDestId(protocol.getDestId());
+        protocol.setDestId(pubReq.getDestId());
         protocol.setSrcName(pubReq.getSrcName());
         protocol.setMsg(pubReq.getMsg());
 
         NioSocketChannel channel = ConnSessionCache.channelMap.get(protocol.getDestId());
-        System.out.println("发送：" + protocol);
-        channel.writeAndFlush(protocol);
+        if (channel != null) {
+            System.out.println("发送：" + protocol);
+            channel.writeAndFlush(protocol);
+        } else {
+            System.out.println("对方已经不在线:" + protocol.getDestId());
+            ConnSessionCache.channelMap.remove(protocol.getDestId());
+        }
+
     }
 }

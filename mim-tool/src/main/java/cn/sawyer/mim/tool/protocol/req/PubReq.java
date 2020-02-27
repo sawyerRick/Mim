@@ -47,4 +47,14 @@ public class PubReq {
     public void setDestId(Long destId) {
         this.destId = destId;
     }
+
+    @Override
+    public String toString() {
+        return "PubReq{" +
+                "srcId=" + srcId +
+                ", destId=" + destId +
+                ", srcName='" + srcName + '\'' +
+                ", msg='" + msg + '\'' +
+                '}';
+    }
 }

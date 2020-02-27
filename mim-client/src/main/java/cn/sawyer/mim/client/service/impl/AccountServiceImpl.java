@@ -46,6 +46,9 @@ public class AccountServiceImpl implements AccountService {
 
             if (loginResp.isSuccessful()) {
                 Result loginResult = JSON.parseObject(loginResp.body().string(), Result.class);
+                JSONObject data = JSON.parseObject(loginResult.getData().toString());
+                String server = data.get("server").toString();
+                ClientCache.server = server;
                 System.out.println(loginResult);
                 if (loginResult.getCode().equals(Code.SUCCESS.code)) {
                     return Code.SUCCESS;
@@ -66,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Code sendMsg(MimProtocol protocol) {
 
-        if (ClientCache.SvSocketHolder != null && ClientCache.serverInfoHolder != null) {
+        if (ClientCache.SvSocketHolder != null && ClientCache.server != null) {
             try {
                 ClientCache.SvSocketHolder.writeAndFlush(protocol);
                 System.out.println("发送成功..." + protocol);
@@ -85,7 +88,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             String msgString = JSONObject.toJSONString(pubReq);
             RequestBody body = RequestBody.create(MediaType.parse("application/json"), msgString);
-            String url = "http://" + appConfig.getRouterHost() + ":" + appConfig.getRouterPort() + "/publicMsg";
+            String url = "http://" + appConfig.getRouterHost() + ":" + appConfig.getRouterPort() + "/pubMsg";
             Request loginReq = new Request.Builder()
                     .url(url)
                     .post(body)

@@ -41,7 +41,8 @@ public class MimClient {
 
     private SocketChannel socketChannel;
 
-    public void start(ServerInfo serverInfo) {
+    public void start(String server) {
+        ServerInfo serverInfo = new ServerInfo(server);
         EventLoopGroup client = new NioEventLoopGroup();
 
         Bootstrap boot = new Bootstrap();

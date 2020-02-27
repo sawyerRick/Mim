@@ -47,14 +47,14 @@ public class ServerServiceImpl implements ServerService {
             ServerInfo serverInfo = new ServerInfo(server);
             String msgString = JSONObject.toJSONString(pubReq);
             RequestBody body = RequestBody.create(MediaType.parse("application/json"), msgString);
-            String url = "http://" + serverInfo.getHost() + ":" + serverInfo.getHttpPort() + "/pub";
+            String url = "http://" + serverInfo.getHost() + ":" + serverInfo.getHttpPort() + "/pubMsg";
             Request loginReq = new Request.Builder()
                     .url(url)
                     .post(body)
                     .build();
-
+            System.out.println("url:" + url);
             Response disResp = okHttpClient.newCall(loginReq).execute();
-
+            System.out.println("发送响应：" + disResp.body().string());
             if (disResp.isSuccessful()) {
                 System.out.println("发送成功:" + msgString + " pub to" + serverInfo);
                 System.out.println(disResp.body().string());

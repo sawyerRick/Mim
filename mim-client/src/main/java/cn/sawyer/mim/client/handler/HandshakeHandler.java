@@ -39,9 +39,8 @@ public class HandshakeHandler extends ChannelInboundHandlerAdapter {
         if (protocol.getType() != null && protocol.getType() == MsgType.HANDSHAKE_RESP) {
             System.out.println("握手成功！");
             ClientCache.SvSocketHolder = (NioSocketChannel) ctx.channel();
-        } else {
-            ctx.fireChannelRead(msg);
         }
+        ctx.fireChannelRead(msg);
     }
 
     @Override
@@ -51,6 +50,7 @@ public class HandshakeHandler extends ChannelInboundHandlerAdapter {
 
     private MimProtocol buildHandShakeReq() {
         MimProtocol protocol = new MimProtocol();
+        protocol.setSrcId(appConfig.getUserId());
         protocol.setType(MsgType.HANDSHAKE_REQ);
 
         return protocol;

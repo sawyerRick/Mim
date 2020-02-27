@@ -32,6 +32,7 @@ public class HandShakeHandler extends ChannelInboundHandlerAdapter {
                 cacheChannel.close();
             }
 
+            System.out.println("缓存id-channel :" + protocol.getSrcId() + "- " + ctx.channel().remoteAddress());
             channelMap.put(protocol.getSrcId(), (NioSocketChannel) ctx.channel());
         } else {
             ctx.fireChannelRead(msg);

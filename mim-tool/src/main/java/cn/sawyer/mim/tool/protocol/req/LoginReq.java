@@ -31,8 +31,8 @@ public class LoginReq {
     @Override
     public String toString() {
         return "LoginReq{" +
-                "srcId=" + userId +
-                ", srcName='" + username + '\'' +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
                 '}';
     }
 }
