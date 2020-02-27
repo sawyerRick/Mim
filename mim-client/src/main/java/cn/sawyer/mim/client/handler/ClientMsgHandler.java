@@ -1,8 +1,8 @@
 package cn.sawyer.mim.client.handler;
 
-import cn.sawyer.mim.tool.result.MsgType;
-import cn.sawyer.mim.tool.model.MimMessage;
+import cn.sawyer.mim.tool.enums.MsgType;
 import cn.sawyer.mim.client.service.MimClientService;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
@@ -26,16 +26,16 @@ public class ClientMsgHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("你已经断开连接... server:" + ctx.channel().remoteAddress());
+        System.out.println("已经断开连接... remote:" + ctx.channel().remoteAddress());
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object object) {
-        MimMessage msg = (MimMessage) object;
+        MimProtocol protocol = (MimProtocol) object;
 
         // 消息回应
-        if (msg.getType() != null && msg.getType().equals(MsgType.MSG_RESP.value())) {
-            System.out.println("[+] 消息：" + msg.getMsg());
+        if (protocol.getType() != null && protocol.getType().equals(MsgType.MSG_RESP)) {
+            System.out.println("[+] 收到消息：" + protocol);
         }
     }
 

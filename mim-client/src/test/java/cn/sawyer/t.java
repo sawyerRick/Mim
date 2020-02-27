@@ -1,7 +1,7 @@
 //package cn.sawyer;
 //
 //import cn.sawyer.mim.tool.model.ServerInfo;
-//import cn.sawyer.mim.tool.result.Code;
+//import cn.sawyer.mim.tool.enums.Code;
 //import cn.sawyer.mim.tool.result.Result;
 //import com.alibaba.fastjson.JSON;
 //import okhttp3.*;

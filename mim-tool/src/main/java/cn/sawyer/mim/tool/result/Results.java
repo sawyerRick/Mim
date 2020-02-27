@@ -1,5 +1,7 @@
 package cn.sawyer.mim.tool.result;
 
+import cn.sawyer.mim.tool.enums.Code;
+
 /**
  * @program: mim
  * @description:

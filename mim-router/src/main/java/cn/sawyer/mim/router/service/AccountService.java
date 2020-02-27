@@ -1,11 +1,9 @@
 package cn.sawyer.mim.router.service;
 
-import cn.sawyer.mim.tool.model.MimMessage;
 import cn.sawyer.mim.tool.model.ServerInfo;
 import cn.sawyer.mim.tool.model.UserInfo;
-import cn.sawyer.mim.tool.result.Code;
+import cn.sawyer.mim.tool.enums.Code;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,15 +15,15 @@ import java.util.Map;
 
 public interface AccountService {
 
-    Code login(UserInfo userInfo);
+    Code login(Long userId, String username);
 
-    Code registry(UserInfo userInfo);
+    String route(Long userId);
 
-    Code logout(UserInfo userInfo);
+    Code registry(Long userId, String username);
 
-    ServerInfo selectServer(UserInfo userInfo);
+    Code logout(Long userId);
 
-    boolean checkOnline(Long userId);
+    Boolean checkOnline(Long userId);
 
     Map<Long, String> parseRouterMap();
 }

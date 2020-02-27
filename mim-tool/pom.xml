@@ -11,4 +11,11 @@
 
     <artifactId>mim-tool</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.11.4</version>
+        </dependency>
+    </dependencies>
 </project>

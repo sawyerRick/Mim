@@ -1,19 +1,19 @@
 package cn.sawyer.mim.router.controller;
 
 import cn.sawyer.mim.router.cache.RouterCache;
-import cn.sawyer.mim.tool.model.MimMessage;
-import cn.sawyer.mim.tool.model.ServerInfo;
-import cn.sawyer.mim.tool.model.UserInfo;
-import cn.sawyer.mim.tool.result.Code;
+import cn.sawyer.mim.tool.enums.Code;
+import cn.sawyer.mim.tool.protocol.req.LoginReq;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 import cn.sawyer.mim.tool.result.Results;
 import cn.sawyer.mim.router.service.AccountService;
 import cn.sawyer.mim.router.service.ServerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import cn.sawyer.mim.tool.result.Result;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +27,8 @@ import java.util.Map;
 @RequestMapping("/")
 public class RouterController {
 
+    private static final Logger logger = LoggerFactory.getLogger(RouterController.class);
+
     @Autowired
     AccountService accountService;
 
@@ -37,31 +39,29 @@ public class RouterController {
     RouterCache cache;
 
     // 私聊
-    @PostMapping("privateMsg")
-    public Result privateMsg(@RequestBody MimMessage mimMessage) {
-
-
-        return Results.newResult(Code.SUCCESS);
-    }
+//    @PostMapping("ptv")
+//    public Result privateMsg(@RequestBody  mimMessage) {
+//
+//
+//        return Results.newResult(Code.SUCCESS);
+//    }
 
     // 群发
-    @PostMapping("publicMsg")
-    public Result publicMsg(@RequestBody MimMessage mimMessage) {
-        System.out.println("recv:" + mimMessage);
-
-//        boolean online = accountService.checkOnline(mimMessage.getUserId());
-        if (true) {
+    @PostMapping("pub")
+    public Result publicMsg(@RequestBody PubReq pubReq) {
+        System.out.println("群发请求:" + pubReq);
+        boolean online = accountService.checkOnline(pubReq.getSrcId());
+        if (online) {
             Map<Long, String> routerMap = accountService.parseRouterMap();
-            System.out.println("route size:" + routerMap.size());
             for (Map.Entry<Long, String> entry : routerMap.entrySet()) {
-                Long userId = entry.getKey();
-                ServerInfo serverInfo = new ServerInfo(entry.getValue());
+                Long destId = entry.getKey();
+                String server = entry.getValue();
                 // 跳过自己
-                if (!userId.equals(mimMessage.getUserId())) {
-                    mimMessage.setUserId(userId);
-                    serverService.distribute(mimMessage, serverInfo);
+                if (!destId.equals(pubReq.getSrcId())) {
+                    pubReq.setDestId(destId);
+                    serverService.pub(pubReq, server);
                 } else {
-                    System.out.println("跳过自己" + userId + ", " + mimMessage.getUserId());
+                    System.out.println("跳过了自己...");
                 }
             }
         }
@@ -71,49 +71,38 @@ public class RouterController {
 
     // 登录
     @PostMapping("login")
-    public Result login(@RequestBody UserInfo userInfo) {
-        System.out.println("LOGIN :" + userInfo);
-        Code loginCode = accountService.login(userInfo);
-
-        if (loginCode.equals(Code.DUPLICATE_LOGIN)) {
+    public Result login(@RequestBody LoginReq loginReq) {
+        Map<String, Object> data = new HashMap<>();
+        Code loginCode = accountService.login(loginReq.getUserId(), loginReq.getUsername());
+        if (loginCode.equals(Code.SUCCESS)) {
+            String server = accountService.route(loginReq.getUserId());
+            data.put("server", server);
+        } else if (loginCode.equals(Code.DUPLICATE_LOGIN)) {
             // 重复登录，强制下线
-            accountService.logout(userInfo);
+            accountService.logout(loginReq.getUserId());
         }
 
-        return Results.newResult(Code.SUCCESS);
-    }
-
-    // 获取服务器
-    @PostMapping("avaServer")
-    public Result getAvaServer(@RequestBody UserInfo userInfo) {
-
-        // 为Client路由服务器
-        ServerInfo server = accountService.selectServer(userInfo);
-        System.out.println("返回路由服务器：" + server);
-
-        return Results.newResult(Code.SUCCESS, server);
+        return Results.newResult(Code.SUCCESS, data);
     }
 
     // 注销
     @GetMapping("logout")
-    public Result logout(UserInfo userInfo) {
+    public Result logout(@RequestBody LoginReq loginReq) {
 
-        if (userInfo.getUserId() != null) {
-            accountService.logout(userInfo);
-        }
+        accountService.logout(loginReq.getUserId());
 
         return Results.newResult(Code.SUCCESS);
     }
 
     // 注册
     @PostMapping("registry")
-    public Result registry(UserInfo userInfo) {
-        Code registryCode = accountService.registry(userInfo);
+    public Result registry(@RequestBody LoginReq loginReq) {
+        Code registryCode = accountService.registry(loginReq.getUserId(), loginReq.getUsername());
         Map<String, Object> data = new HashMap<>();
 
         // 注册
         if (registryCode.equals(Code.SUCCESS)) {
-            data.put("userInfo", userInfo);
+            data.put("userInfo", loginReq);
         }
 
         return Results.newResult(Code.SUCCESS, data);

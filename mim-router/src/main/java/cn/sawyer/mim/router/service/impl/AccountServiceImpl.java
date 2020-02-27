@@ -4,11 +4,13 @@ import cn.sawyer.mim.router.cache.RouterCache;
 import cn.sawyer.mim.router.service.AccountService;
 import cn.sawyer.mim.router.service.ServerService;
 import cn.sawyer.mim.tool.constant.Constants;
-import cn.sawyer.mim.tool.model.MimMessage;
 import cn.sawyer.mim.tool.model.ServerInfo;
 import cn.sawyer.mim.tool.model.UserInfo;
-import cn.sawyer.mim.tool.result.Code;
+import cn.sawyer.mim.tool.enums.Code;
+import jdk.nashorn.internal.runtime.linker.Bootstrap;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ import java.util.Set;
 @Service
 public class AccountServiceImpl implements AccountService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
+
     @Autowired
     RedisTemplate<String, String> redisTemplate;
 
@@ -40,20 +44,22 @@ public class AccountServiceImpl implements AccountService {
     RouterCache cache;
 
     @Override
-    public Code login(UserInfo userInfo){
+    public Code login(Long userId, String username){
         // Redis key
-        String key = Constants.ACCOUNT_PREFIX + userInfo.getUsername();
+        String idKey = Constants.ACCOUNT_PREFIX + username;
 
-        Long userIdFromDb = Long.valueOf(redisTemplate.opsForValue().get(key));
+        Long userIdFromDb = Long.valueOf(redisTemplate.opsForValue().get(idKey));
 
-        Long res;
+        Long loginStatus;
         Code code = Code.SUCCESS;
 
         // 登录
-        if (userIdFromDb.equals(userInfo.getUserId())) {
+        if (userIdFromDb.equals(userId)) {
             // 检查已登录
-            res = redisTemplate.opsForSet().add(Constants.ONLINE, userInfo.getUserId().toString());
-            code = res == 1 ? Code.DUPLICATE_LOGIN : code;
+            loginStatus = redisTemplate.opsForSet().add(Constants.ONLINE_KEY, userId.toString());
+            if (loginStatus == 1) {
+                code = Code.DUPLICATE_LOGIN;
+            }
         } else {
             code = Code.LOGIN_ERROR;
         }
@@ -62,15 +68,28 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Code registry(UserInfo userInfo) {
-        String key = Constants.ACCOUNT_PREFIX + userInfo.getUserId();
-        String dupKey = Constants.ACCOUNT_PREFIX + userInfo.getUsername();
+    public String route(Long userId) {
+        // 配置id-server路由
+        String server = serverService.select(cache.getAll());
+        logger.info("保存路由：userId:" + userId + ", server:" + server);
+        String key = Constants.ROUTED_KEY;
+        redisTemplate.opsForHash().put(key, userId.toString(), server);
+
+        return server;
+    }
+
+    @Override
+    public Code registry(Long userId, String username) {
+
+        String idKey = Constants.ACCOUNT_PREFIX + userId;
+        String nameKey = Constants.ACCOUNT_PREFIX + username;
+
         Code code = Code.SUCCESS;
 
-        String name = redisTemplate.opsForValue().get(key);
+        String name = redisTemplate.opsForValue().get(idKey);
         if (name == null) {
-            redisTemplate.opsForValue().set(key, userInfo.getUsername());
-            redisTemplate.opsForValue().set(dupKey, userInfo.getUserId().toString());
+            redisTemplate.opsForValue().set(idKey, userId.toString());
+            redisTemplate.opsForValue().set(nameKey, username);
         } else {
             code = Code.DUPLICATE_REGISTRY;
         }
@@ -79,45 +98,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Code logout(UserInfo userInfo) {
+    public Code logout(Long userId) {
 
-        if (userInfo.getUserId() != null) {
-            String key = Constants.ONLINE;
-            Long logoutOk = redisTemplate.opsForSet().remove(key, userInfo.getUserId().toString());
-            System.out.println("注销状态：" + logoutOk);
-        }
+        String key = Constants.ONLINE_KEY;
+        redisTemplate.opsForSet().remove(key, userId.toString());
+        logger.info("注销：" + userId);
 
         return Code.SUCCESS;
     }
 
-    @Override
-    public ServerInfo selectServer(UserInfo userInfo) {
-        ServerInfo serverInfo = null;
-
-        boolean online = checkOnline(userInfo.getUserId());
-        if (true) {
-            String server = serverService.select(cache.getAll());
-            serverInfo = new ServerInfo(server);
-
-            String key = Constants.ROUTED_KEY;
-
-            // 保存userId-server路由状态
-            System.out.println("userId:" + userInfo.getUserId() + ", server:" + server);
-            redisTemplate.opsForHash().put(key, userInfo.getUserId().toString(), server);
-        } else {
-            System.out.println("不在线");
-        }
-
-        return serverInfo;
-    }
 
     @Override
-    public boolean checkOnline(Long userId){
-        String key = Constants.ONLINE;
+    public Boolean checkOnline(Long userId) {
+        String key = Constants.ONLINE_KEY;
         System.out.println("检查在线：" + key);
-        boolean online = redisTemplate.opsForSet().isMember(key, userId.toString());
 
-        return online;
+        return redisTemplate.opsForSet().isMember(key, userId.toString());
     }
 
     @Override

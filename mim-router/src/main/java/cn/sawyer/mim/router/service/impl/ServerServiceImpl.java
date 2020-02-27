@@ -2,8 +2,8 @@ package cn.sawyer.mim.router.service.impl;
 
 import cn.sawyer.mim.router.config.MimRouterConfig;
 import cn.sawyer.mim.router.service.ServerService;
-import cn.sawyer.mim.tool.model.MimMessage;
 import cn.sawyer.mim.tool.model.ServerInfo;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class ServerServiceImpl implements ServerService {
     @Autowired
     OkHttpClient okHttpClient;
 
-    private AtomicInteger atom = new AtomicInteger(0);
+    private AtomicInteger times = new AtomicInteger(0);
 
     @Override
     public String select(List<String> list) {
@@ -36,17 +36,18 @@ public class ServerServiceImpl implements ServerService {
             throw new RuntimeException("无可用服务器");
         }
 
-        int offset = atom.getAndIncrement() % list.size();
+        int offset = times.getAndIncrement() % list.size();
 
         return list.get(offset);
     }
 
     @Override
-    public void distribute(MimMessage msg, ServerInfo serverInfo) {
+    public void pub(PubReq pubReq, String server) {
         try {
-            String msgString = JSONObject.toJSONString(msg);
+            ServerInfo serverInfo = new ServerInfo(server);
+            String msgString = JSONObject.toJSONString(pubReq);
             RequestBody body = RequestBody.create(MediaType.parse("application/json"), msgString);
-            String url = "http://" + serverInfo.getHost() + ":" + serverInfo.getHttpPort() + "/distribute";
+            String url = "http://" + serverInfo.getHost() + ":" + serverInfo.getHttpPort() + "/pub";
             Request loginReq = new Request.Builder()
                     .url(url)
                     .post(body)
@@ -55,10 +56,10 @@ public class ServerServiceImpl implements ServerService {
             Response disResp = okHttpClient.newCall(loginReq).execute();
 
             if (disResp.isSuccessful()) {
-                System.out.println("发送成功:" + msgString + " distribute to" + serverInfo);
+                System.out.println("发送成功:" + msgString + " pub to" + serverInfo);
                 System.out.println(disResp.body().string());
             } else {
-                System.out.println("发送失败" + msgString + " distribute to" + serverInfo);
+                System.out.println("发送失败" + msgString + " pub to" + serverInfo);
             }
         } catch (Exception e) {
             e.printStackTrace();

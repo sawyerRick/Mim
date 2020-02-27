@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package cn.sawyer.mim.tool.protobuf.domain;
+
+option java_package = "cn.sawyer.mim.tool.protobuf.domain";
+option java_outer_classname = "MsgProtobuf";
+
+message MimMsgProtocol {
+  required int64 srcId = 1;
+  required string srcName = 3;
+
+  optional int64 destId = 2;
+  optional string destName = 4;
+
+  required string msg = 5;
+  required MsgType type = 6;
+
+  enum MsgType {
+      MOBILE = 0;
+      HOME = 1;
+      WORK = 2;
+  }
+}

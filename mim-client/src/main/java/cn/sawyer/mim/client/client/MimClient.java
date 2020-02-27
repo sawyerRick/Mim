@@ -3,7 +3,6 @@ package cn.sawyer.mim.client.client;
 import cn.sawyer.mim.client.handler.ClientMsgHandler;
 import cn.sawyer.mim.client.handler.HandshakeHandler;
 import cn.sawyer.mim.client.handler.HeartBeatHandler;
-import cn.sawyer.mim.tool.model.MimMessage;
 import cn.sawyer.mim.tool.model.ServerInfo;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -37,8 +36,6 @@ public class MimClient {
 
     @Autowired
     HeartBeatHandler heartBeatHandler;
-
-
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MimClient.class);
 

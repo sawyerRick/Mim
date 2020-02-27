@@ -2,10 +2,11 @@ package cn.sawyer.mim.client.service.impl;
 
 import cn.sawyer.mim.client.cache.ClientCache;
 import cn.sawyer.mim.client.config.MimClientConfig;
-import cn.sawyer.mim.tool.model.MimMessage;
 import cn.sawyer.mim.tool.model.ServerInfo;
 import cn.sawyer.mim.tool.model.UserInfo;
-import cn.sawyer.mim.tool.result.Code;
+import cn.sawyer.mim.tool.enums.Code;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 import cn.sawyer.mim.tool.result.Result;
 import cn.sawyer.mim.client.service.AccountService;
 import com.alibaba.fastjson.JSON;
@@ -30,7 +31,7 @@ public class AccountServiceImpl implements AccountService {
     MimClientConfig appConfig;
 
     @Override
-    public Code login() {
+    public Code login(long userId, String username) {
         UserInfo userInfo = new UserInfo(appConfig.getUserId(), appConfig.getUsername());
         String json = JSONObject.toJSONString(userInfo);
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
@@ -63,12 +64,12 @@ public class AccountServiceImpl implements AccountService {
 
     // 手动发送
     @Override
-    public Code sendMsg(MimMessage msg) {
+    public Code sendMsg(MimProtocol protocol) {
 
         if (ClientCache.SvSocketHolder != null && ClientCache.serverInfoHolder != null) {
             try {
-                ClientCache.SvSocketHolder.writeAndFlush(msg);
-                System.out.println("发送成功..." + msg);
+                ClientCache.SvSocketHolder.writeAndFlush(protocol);
+                System.out.println("发送成功..." + protocol);
             } catch (Exception e) {
                 System.out.println("发送错误，");
                 e.printStackTrace();
@@ -80,9 +81,9 @@ public class AccountServiceImpl implements AccountService {
 
     // 群发
     @Override
-    public void sendPublicMsg(MimMessage msg) {
+    public void sendPublicMsg(PubReq pubReq) {
         try {
-            String msgString = JSONObject.toJSONString(msg);
+            String msgString = JSONObject.toJSONString(pubReq);
             RequestBody body = RequestBody.create(MediaType.parse("application/json"), msgString);
             String url = "http://" + appConfig.getRouterHost() + ":" + appConfig.getRouterPort() + "/publicMsg";
             Request loginReq = new Request.Builder()
@@ -93,7 +94,7 @@ public class AccountServiceImpl implements AccountService {
             Response resp = okHttpClient.newCall(loginReq).execute();
 
             if (resp.isSuccessful()) {
-                System.out.println("发送成功:" + msgString + " send to router");
+                System.out.println("发送成功:" + pubReq);
                 System.out.println(resp.body().string());
             } else {
                 System.out.println("发送失败" + msgString);
@@ -101,32 +102,5 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public ServerInfo getAvaServer(UserInfo userInfo) {
-        String jsonString = JSONObject.toJSONString(userInfo);
-        RequestBody body = RequestBody.create(MediaType.parse("application/json"), jsonString.toString());
-
-        Request getServerReq = new Request.Builder()
-                .url(appConfig.getUrlAvaServer())
-                .post(body)
-                .build();
-
-        ServerInfo serverInfo = null;
-        try {
-            Response getServerResp = okHttpClient.newCall(getServerReq).execute();
-
-            String string = getServerResp.body().string();
-            System.out.println(string);
-
-            Result result = JSON.parseObject(string, Result.class);
-            serverInfo = JSON.parseObject(result.getData().toString(), ServerInfo.class);
-            System.out.println("[+] Server Info!" + serverInfo);
-        } catch (Exception e) {
-            System.out.println("[!] 获取路由信息失败");
-        }
-
-        return serverInfo;
     }
 }

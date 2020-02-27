@@ -3,8 +3,7 @@ package cn.sawyer.mim.client.thread;
 import cn.sawyer.mim.client.config.MimClientConfig;
 import cn.sawyer.mim.client.service.AccountService;
 import cn.sawyer.mim.client.util.BeanContext;
-import cn.sawyer.mim.tool.result.MsgType;
-import cn.sawyer.mim.tool.model.MimMessage;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 
 import java.util.Scanner;
 
@@ -19,11 +18,11 @@ public class ScanThread implements Runnable{
 
     private AccountService service;
 
-    private MimClientConfig mimClientConfig;
+    private MimClientConfig appConfig;
 
     public ScanThread() {
         service = BeanContext.getBean(AccountService.class);
-        mimClientConfig = BeanContext.getBean(MimClientConfig.class);
+        appConfig = BeanContext.getBean(MimClientConfig.class);
     }
 
     @Override
@@ -35,14 +34,13 @@ public class ScanThread implements Runnable{
             System.out.println(">");
             String msg = scanner.nextLine();
 
-            MimMessage mimMessage = new MimMessage();
-            mimMessage.setUserId(mimClientConfig.getUserId());
-            mimMessage.setUsername(mimClientConfig.getUsername());
-            mimMessage.setMsg(msg);
-            mimMessage.setType(MsgType.MSG_REQ.value());
+            PubReq pubReq = new PubReq();
+            pubReq.setSrcId(appConfig.getUserId());
+            pubReq.setSrcName(appConfig.getUsername());
+            pubReq.setMsg(msg);
 
 //            service.sendMsg(mimMessage);
-            service.sendPublicMsg(mimMessage);
+            service.sendPublicMsg(pubReq);
         }
     }
 }

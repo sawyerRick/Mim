@@ -1,4 +1,4 @@
-package cn.sawyer.mim.tool.result;
+package cn.sawyer.mim.tool.enums;
 
 /**
  * @program: mim

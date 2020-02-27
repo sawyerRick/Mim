@@ -1,16 +1,16 @@
 package cn.sawyer.mim.server.controller;
 
 import cn.sawyer.mim.server.service.ConnService;
-import cn.sawyer.mim.tool.result.Code;
-import cn.sawyer.mim.tool.result.MsgType;
-import cn.sawyer.mim.tool.model.MimMessage;
+import cn.sawyer.mim.tool.enums.Code;
+import cn.sawyer.mim.tool.enums.MsgType;
 import cn.sawyer.mim.server.util.ConnSessionCache;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 import cn.sawyer.mim.tool.result.Result;
 import cn.sawyer.mim.tool.result.Results;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 
 /**
  * @program: mim
@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.*;
  **/
 @RestController
 @RequestMapping("/")
-public class MsgController {
+public class ServerController {
 
     @Autowired
     ConnService connService;
 
-    @PostMapping("distribute")
-    public Result distribute(@RequestBody MimMessage mimMessage) {
-        connService.send(mimMessage);
+    @PostMapping("pubMsg")
+    public Result pubMsg(@RequestBody PubReq pubReq) {
+        connService.send(pubReq);
 
         return Results.newResult(Code.SUCCESS);
     }
@@ -37,10 +37,10 @@ public class MsgController {
         int time = 0;
         System.out.println("Client nums:" + ConnSessionCache.channelMap.size());
         for (NioSocketChannel channel : ConnSessionCache.channelMap.values()) {
-            MimMessage msg = new MimMessage();
-            msg.setMsg("Hello Client");
-            msg.setType(MsgType.MSG_RESP.value());
-            channel.writeAndFlush(msg);
+            MimProtocol protocol = new MimProtocol();
+            protocol.setMsg("Hello Client");
+            protocol.setType(MsgType.MSG_RESP);
+            channel.writeAndFlush(protocol);
             ++time;
             System.out.println("Send to:" + channel.remoteAddress());
         }

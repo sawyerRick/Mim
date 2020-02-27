@@ -1,7 +1,6 @@
 package cn.sawyer.mim.router.service;
 
-import cn.sawyer.mim.tool.model.MimMessage;
-import cn.sawyer.mim.tool.model.ServerInfo;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 
 import java.util.List;
 
@@ -15,5 +14,5 @@ public interface ServerService {
 
     String select(List<String> list);
 
-    void distribute(MimMessage msg, ServerInfo serverInfo);
+    void pub(PubReq pubReq, String server);
 }

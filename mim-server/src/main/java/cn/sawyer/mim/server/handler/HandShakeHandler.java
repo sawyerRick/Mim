@@ -1,7 +1,7 @@
 package cn.sawyer.mim.server.handler;
 
-import cn.sawyer.mim.tool.result.MsgType;
-import cn.sawyer.mim.tool.model.MimMessage;
+import cn.sawyer.mim.tool.enums.MsgType;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -18,33 +18,32 @@ public class HandShakeHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        MimMessage message = (MimMessage) msg;
+        MimProtocol protocol = (MimProtocol) msg;
 
-        if (message != null && message.getType() == MsgType.HANDSHAKE_REQ.value()) {
-
-            MimMessage mimMessage;
-            mimMessage = buildResponse();
-            System.out.println("[+] 握手请求:" + message);
-            System.out.println("UserId: " + message.getUserId() + " 连接...");
-            ctx.writeAndFlush(mimMessage);
-            if (channelMap.containsKey(message.getUserId())) {
+        if (protocol != null && protocol.getType() == MsgType.HANDSHAKE_REQ) {
+            System.out.println("[+] 握手请求:" + protocol);
+            MimProtocol handshakeResp = buildResponse();
+            ctx.writeAndFlush(handshakeResp);
+            if (channelMap.containsKey(protocol.getSrcId())) {
                 // 清除重复连接
-                NioSocketChannel channel = channelMap.get(message.getUserId());
-                System.out.println("清除连接：" + channel.remoteAddress() + " by userId:" + message.getUserId());
-                channelMap.remove(message.getUserId());
-                channel.close();
+                NioSocketChannel cacheChannel = channelMap.get(protocol.getSrcId());
+                System.out.println("清除连接：" + protocol);
+                channelMap.remove(protocol.getSrcId());
+                cacheChannel.close();
             }
-            channelMap.put(message.getUserId(), (NioSocketChannel) ctx.channel());
+
+            channelMap.put(protocol.getSrcId(), (NioSocketChannel) ctx.channel());
         } else {
             ctx.fireChannelRead(msg);
         }
     }
 
-    private MimMessage buildResponse() {
-        MimMessage message = new MimMessage();
-        message.setType(MsgType.HANDSHAKE_RESP.value());
+    // 构造握手响应
+    private MimProtocol buildResponse() {
+        MimProtocol protocol = new MimProtocol();
+        protocol.setType(MsgType.HANDSHAKE_RESP);
 
-        return message;
+        return protocol;
     }
 
     @Override

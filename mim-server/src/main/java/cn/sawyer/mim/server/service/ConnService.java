@@ -1,6 +1,6 @@
 package cn.sawyer.mim.server.service;
 
-import cn.sawyer.mim.tool.model.MimMessage;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 
 /**
  * @program: mim
@@ -10,6 +10,6 @@ import cn.sawyer.mim.tool.model.MimMessage;
  **/
 public interface ConnService {
 
-    void send(MimMessage msg);
+    void send(PubReq pubReq);
 
 }

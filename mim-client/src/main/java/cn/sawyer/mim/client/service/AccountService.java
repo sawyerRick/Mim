@@ -1,10 +1,10 @@
 package cn.sawyer.mim.client.service;
 
-import cn.sawyer.mim.tool.model.MimMessage;
 import cn.sawyer.mim.tool.model.ServerInfo;
 import cn.sawyer.mim.tool.model.UserInfo;
-import cn.sawyer.mim.tool.result.Code;
-import org.springframework.stereotype.Service;
+import cn.sawyer.mim.tool.enums.Code;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 
 /**
  * @program: mim
@@ -15,11 +15,9 @@ import org.springframework.stereotype.Service;
 
 public interface AccountService {
 
-    Code login();
+    Code login(long userId, String username);
 
-    Code sendMsg(MimMessage msg);
+    Code sendMsg(MimProtocol protocol);
 
-    void sendPublicMsg(MimMessage msg);
-
-    ServerInfo getAvaServer(UserInfo userInfo);
+    void sendPublicMsg(PubReq pubReq);
 }

@@ -1,7 +1,7 @@
 package cn.sawyer.mim.client.handler;
 
-import cn.sawyer.mim.tool.result.MsgType;
-import cn.sawyer.mim.tool.model.MimMessage;
+import cn.sawyer.mim.tool.enums.MsgType;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +29,9 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        MimMessage message =(MimMessage) msg;
+        MimProtocol protocol =(MimProtocol) msg;
         //如果握手成功，主动发送心跳消息
-        if (message != null && message.getType() == MsgType.HANDSHAKE_RESP.value()) {
+        if (protocol != null && protocol.getType() == MsgType.HANDSHAKE_RESP) {
             // 5s 发送一次心跳
             heartBeat = ctx.executor().scheduleAtFixedRate(new HeartBeatHandler.HeartBeatTask(ctx),
                     0, 5000, TimeUnit.MILLISECONDS);
@@ -55,15 +55,15 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
             this.ctx = ctx;
         }
         public void run() {
-            MimMessage heatBeat  = buildHeatBeat();
-            System.out.println("Client send heartbeat message to server :-->" + new Date().toString());
+            MimProtocol heatBeat  = buildHeatBeat();
+            System.out.println("发送心跳..." + new Date().toString());
             ctx.writeAndFlush(heatBeat);
         }
 
-        private MimMessage buildHeatBeat() {
-            MimMessage message  = new MimMessage();
-            message.setType(MsgType.HEARTBEAT_REQ.value());
-            return message;
+        private MimProtocol buildHeatBeat() {
+            MimProtocol protocol  = new MimProtocol();
+            protocol.setType(MsgType.HEARTBEAT_REQ);
+            return protocol;
         }
 
     }

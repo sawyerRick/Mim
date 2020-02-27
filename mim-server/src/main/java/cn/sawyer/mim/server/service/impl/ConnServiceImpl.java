@@ -2,12 +2,11 @@ package cn.sawyer.mim.server.service.impl;
 
 import cn.sawyer.mim.server.service.ConnService;
 import cn.sawyer.mim.server.util.ConnSessionCache;
-import cn.sawyer.mim.tool.model.MimMessage;
-import cn.sawyer.mim.tool.result.MsgType;
+import cn.sawyer.mim.tool.enums.MsgType;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
+import cn.sawyer.mim.tool.protocol.req.PubReq;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 /**
  * @program: mim
@@ -20,11 +19,15 @@ import java.util.Map;
 public class ConnServiceImpl implements ConnService {
 
     @Override
-    public void send(MimMessage msg) {
-        msg.setType(MsgType.MSG_RESP.value());
-        Long objectId = msg.getUserId();
-        NioSocketChannel channel = ConnSessionCache.channelMap.get(objectId);
-        System.out.println("Send:" + msg + " to :" + objectId);
-        channel.writeAndFlush(msg);
+    public void send(PubReq pubReq) {
+        MimProtocol protocol = new MimProtocol();
+        protocol.setType(MsgType.MSG_RESP);
+        protocol.setDestId(protocol.getDestId());
+        protocol.setSrcName(pubReq.getSrcName());
+        protocol.setMsg(pubReq.getMsg());
+
+        NioSocketChannel channel = ConnSessionCache.channelMap.get(protocol.getDestId());
+        System.out.println("发送：" + protocol);
+        channel.writeAndFlush(protocol);
     }
 }

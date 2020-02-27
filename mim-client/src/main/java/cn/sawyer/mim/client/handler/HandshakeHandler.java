@@ -2,8 +2,8 @@ package cn.sawyer.mim.client.handler;
 
 import cn.sawyer.mim.client.cache.ClientCache;
 import cn.sawyer.mim.client.config.MimClientConfig;
-import cn.sawyer.mim.tool.result.MsgType;
-import cn.sawyer.mim.tool.model.MimMessage;
+import cn.sawyer.mim.tool.enums.MsgType;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -34,13 +34,14 @@ public class HandshakeHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        MimMessage message = (MimMessage) msg;
+        MimProtocol protocol = (MimProtocol) msg;
         // 检查 握手回应
-        if (message.getType() != null && message.getType() == MsgType.HANDSHAKE_RESP.value()) {
+        if (protocol.getType() != null && protocol.getType() == MsgType.HANDSHAKE_RESP) {
             System.out.println("握手成功！");
             ClientCache.SvSocketHolder = (NioSocketChannel) ctx.channel();
+        } else {
+            ctx.fireChannelRead(msg);
         }
-        ctx.fireChannelRead(msg);
     }
 
     @Override
@@ -48,11 +49,10 @@ public class HandshakeHandler extends ChannelInboundHandlerAdapter {
         ctx.fireExceptionCaught(cause);
     }
 
-    private MimMessage buildHandShakeReq() {
-        MimMessage message = new MimMessage();
-        message.setUserId(appConfig.getUserId());
-        message.setType(MsgType.HANDSHAKE_REQ.value());
+    private MimProtocol buildHandShakeReq() {
+        MimProtocol protocol = new MimProtocol();
+        protocol.setType(MsgType.HANDSHAKE_REQ);
 
-        return message;
+        return protocol;
     }
 }

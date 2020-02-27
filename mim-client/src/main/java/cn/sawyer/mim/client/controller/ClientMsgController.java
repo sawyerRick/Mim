@@ -2,8 +2,8 @@ package cn.sawyer.mim.client.controller;
 
 import cn.sawyer.mim.client.cache.ClientCache;
 import cn.sawyer.mim.client.config.MimClientConfig;
-import cn.sawyer.mim.tool.result.MsgType;
-import cn.sawyer.mim.tool.model.MimMessage;
+import cn.sawyer.mim.tool.enums.MsgType;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +29,12 @@ public class ClientMsgController {
 
         NioSocketChannel socketChannel = ClientCache.SvSocketHolder;
 
-        MimMessage mimMessage = new MimMessage();
-        mimMessage.setUserId(appConfig.getUserId());
-        mimMessage.setUsername(appConfig.getUsername());
+        MimProtocol protocol = new MimProtocol();
 
-        mimMessage.setType(MsgType.MSG_REQ.value());
-        mimMessage.setMsg("Hello server!!!");
-        socketChannel.writeAndFlush(mimMessage);
+        protocol.setType(MsgType.MSG_REQ);
+        protocol.setMsg("Hello server!!!");
+        System.out.println("发送：" + protocol);
+        socketChannel.writeAndFlush(protocol);
 
         return "Client send...";
     }

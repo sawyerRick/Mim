@@ -55,6 +55,7 @@ public class MimServer {
                         channel.pipeline().addLast(new ObjectDecoder(1024 * 1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
                         channel.pipeline().addLast(new ObjectEncoder());
                         channel.pipeline().addLast("readTimeoutHandler",new ReadTimeoutHandler(20));
+
                         channel.pipeline().addLast(new HandShakeHandler());
                         channel.pipeline().addLast(new HeartBeatHandler());
                         channel.pipeline().addLast(new ServerHandler());
