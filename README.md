@@ -11,7 +11,7 @@ Mim是一个分布式及时通讯系统。分为三个端：客户端、路由�
 
 路由端和服务端支持水平扩展。
 
-![架构]([https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/%E6%9E%B6%E6%9E%84.png](https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/架构.png))
+![架构](https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/%E6%9E%B6%E6%9E%84.png)
 
 ## Usage
 
@@ -63,15 +63,15 @@ java -jar mim-client/target/mim-client-0.0.1-SNAPSHOT.jar --server.port=9091 --m
 
 Client：
 
-![Client运行截图]([https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/Client%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE.png](https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/Client运行截图.png))
+![Client运行截图](https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/Client%E8%BF%90%E8%A1%8C%E6%88%AA%E5%9B%BE.png)
 
 Server心跳：
 
-![Server心跳]([https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/Server%E5%BF%83%E8%B7%B3.png](https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/Server心跳.png))
+![Server心跳](https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/Server%E5%BF%83%E8%B7%B3.png)
 
 Router路由：
 
-![路由截图]([https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/%E8%B7%AF%E7%94%B1%E6%88%AA%E5%9B%BE.png](https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/路由截图.png))
+![路由截图](https://raw.githubusercontent.com/sawyerRick/Mim/master/IMG/%E8%B7%AF%E7%94%B1%E6%88%AA%E5%9B%BE.png)
 
 ## TODO
 
