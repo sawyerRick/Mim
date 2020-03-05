@@ -27,6 +27,11 @@ public class ConnServiceImpl implements ConnService {
         protocol.setMsg(pubReq.getMsg());
 
         NioSocketChannel channel = ConnSessionCache.channelMap.get(protocol.getDestId());
+        System.out.println("Channel cache 容量：" + ConnSessionCache.channelMap.size());
+        if (ConnSessionCache.channelMap.size() == 0) {
+            throw new RuntimeException("丢失路由");
+        }
+
         if (channel != null) {
             System.out.println("发送：" + protocol);
             channel.writeAndFlush(protocol);

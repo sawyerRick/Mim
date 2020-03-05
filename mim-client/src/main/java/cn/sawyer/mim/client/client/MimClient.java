@@ -1,5 +1,6 @@
 package cn.sawyer.mim.client.client;
 
+import cn.sawyer.mim.client.config.MimClientConfig;
 import cn.sawyer.mim.client.handler.ClientMsgHandler;
 import cn.sawyer.mim.client.handler.HandshakeHandler;
 import cn.sawyer.mim.client.handler.HeartBeatHandler;
@@ -37,12 +38,16 @@ public class MimClient {
     @Autowired
     HeartBeatHandler heartBeatHandler;
 
+    @Autowired
+    MimClientConfig appConfig;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MimClient.class);
 
     private SocketChannel socketChannel;
 
     public void start(String server) {
         ServerInfo serverInfo = new ServerInfo(server);
+        System.out.println("server:" + serverInfo);
         EventLoopGroup client = new NioEventLoopGroup();
 
         Bootstrap boot = new Bootstrap();
@@ -72,6 +77,7 @@ public class MimClient {
             if (future.isSuccess()) {
                 socketChannel = (SocketChannel) future.channel();
                 LOGGER.info("[+] Client启动成功...");
+                System.out.print("\u001b[34m " + appConfig.getUsername() + "$ \u001b[0m");
             } else {
                 LOGGER.error("[!] Client启动失败...");
                 throw new RuntimeException("Client启动失败...");

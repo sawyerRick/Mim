@@ -57,7 +57,6 @@ public class ServerServiceImpl implements ServerService {
             System.out.println("发送响应：" + disResp.body().string());
             if (disResp.isSuccessful()) {
                 System.out.println("发送成功:" + msgString + " pub to" + serverInfo);
-                System.out.println(disResp.body().string());
             } else {
                 System.out.println("发送失败" + msgString + " pub to" + serverInfo);
             }

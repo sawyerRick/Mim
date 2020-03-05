@@ -37,7 +37,7 @@ public class HandshakeHandler extends ChannelInboundHandlerAdapter {
         MimProtocol protocol = (MimProtocol) msg;
         // 检查 握手回应
         if (protocol.getType() != null && protocol.getType() == MsgType.HANDSHAKE_RESP) {
-            System.out.println("握手成功！");
+            System.out.println("连接成功！");
             ClientCache.SvSocketHolder = (NioSocketChannel) ctx.channel();
         }
         ctx.fireChannelRead(msg);

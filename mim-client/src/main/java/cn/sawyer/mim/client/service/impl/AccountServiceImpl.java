@@ -2,16 +2,18 @@ package cn.sawyer.mim.client.service.impl;
 
 import cn.sawyer.mim.client.cache.ClientCache;
 import cn.sawyer.mim.client.config.MimClientConfig;
-import cn.sawyer.mim.tool.model.ServerInfo;
 import cn.sawyer.mim.tool.model.UserInfo;
 import cn.sawyer.mim.tool.enums.Code;
 import cn.sawyer.mim.tool.protocol.MimProtocol;
+import cn.sawyer.mim.tool.protocol.req.LoginReq;
 import cn.sawyer.mim.tool.protocol.req.PubReq;
 import cn.sawyer.mim.tool.result.Result;
 import cn.sawyer.mim.client.service.AccountService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
  **/
 @Service
 public class AccountServiceImpl implements AccountService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Autowired
     OkHttpClient okHttpClient;
@@ -52,13 +56,12 @@ public class AccountServiceImpl implements AccountService {
                 System.out.println(loginResult);
                 if (loginResult.getCode().equals(Code.SUCCESS.code)) {
                     return Code.SUCCESS;
-                } else {
-                    System.out.println("这里");
                 }
             }
         } catch (Exception e) {
-            System.out.println("登录失败");
+            logger.error("登录失败,请重试");
             e.printStackTrace();
+            logger.debug(e.getMessage());
         }
 
         return Code.LOGIN_ERROR;
@@ -97,10 +100,37 @@ public class AccountServiceImpl implements AccountService {
             Response resp = okHttpClient.newCall(loginReq).execute();
 
             if (resp.isSuccessful()) {
-                System.out.println("发送成功:" + pubReq);
-                System.out.println(resp.body().string());
+                logger.debug("发送成功:" + pubReq);
+                logger.debug(resp.body().string());
             } else {
-                System.out.println("发送失败" + msgString);
+                logger.error("发送失败" + msgString);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void logout(Long userId, String username) {
+        LoginReq logoutReq = new LoginReq();
+        logoutReq.setUserId(userId);
+        logoutReq.setUsername(username);
+        try {
+            String msgString = JSONObject.toJSONString(logoutReq);
+            RequestBody body = RequestBody.create(MediaType.parse("application/json"), msgString);
+            String url = "http://" + appConfig.getRouterHost() + ":" + appConfig.getRouterPort() + "/logout";
+            Request loginReq = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+
+            Response resp = okHttpClient.newCall(loginReq).execute();
+
+            if (resp.isSuccessful()) {
+                logger.debug("发送成功:" + logoutReq);
+                logger.debug(resp.body().string());
+            } else {
+                logger.error("发送失败" + msgString);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,5 +1,7 @@
 package cn.sawyer.mim.client.handler;
 
+import cn.sawyer.mim.client.config.MimClientConfig;
+import cn.sawyer.mim.client.service.AccountService;
 import cn.sawyer.mim.tool.enums.MsgType;
 import cn.sawyer.mim.client.service.LocalService;
 import cn.sawyer.mim.tool.protocol.MimProtocol;
@@ -24,8 +26,15 @@ public class ClientMsgHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     LocalService service;
 
+    @Autowired
+    AccountService accountService;
+
+    @Autowired
+    MimClientConfig appConfig;
+
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        accountService.logout(appConfig.getUserId(), appConfig.getUsername());
         System.out.println("已经断开连接... remote:" + ctx.channel().remoteAddress());
     }
 
@@ -35,7 +44,8 @@ public class ClientMsgHandler extends ChannelInboundHandlerAdapter {
 
         // 消息回应
         if (protocol.getType() != null && protocol.getType().equals(MsgType.MSG_RESP)) {
-            System.out.println("[+] 收到消息：" + protocol);
+            service.printNormal(protocol);
+//            System.out.println(protocol);
         }
     }
 

@@ -20,4 +20,6 @@ public interface AccountService {
     Code sendMsg(MimProtocol protocol);
 
     void sendPublicMsg(PubReq pubReq);
+
+    void logout(Long userId, String username);
 }

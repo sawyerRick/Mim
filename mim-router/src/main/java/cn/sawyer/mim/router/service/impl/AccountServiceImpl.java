@@ -47,9 +47,12 @@ public class AccountServiceImpl implements AccountService {
     public Code login(Long userId, String username){
         // Redis key
         String nameKey = Constants.ACCOUNT_PREFIX + username;
-        System.out.println("nameKey:" + nameKey);
-
-        Long userIdFromDb = Long.parseLong(redisTemplate.opsForValue().get(nameKey));
+        System.out.println("nameKey = " + nameKey);
+        String id = redisTemplate.opsForValue().get(nameKey);
+        if (id == null) {
+            return Code.LOGIN_ERROR;
+        }
+        Long userIdFromDb = Long.parseLong(id);
 
         Long loginStatus;
         Code code = Code.SUCCESS;
@@ -59,7 +62,7 @@ public class AccountServiceImpl implements AccountService {
             // 检查已登录
             loginStatus = redisTemplate.opsForSet().add(Constants.ONLINE_KEY, userId.toString());
             if (loginStatus == 0) {
-                code = Code.DUPLICATE_LOGIN;
+                System.out.println("重复登录：" + username);
             }
         } else {
             code = Code.LOGIN_ERROR;
@@ -111,7 +114,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Boolean checkOnline(Long userId) {
         String key = Constants.ONLINE_KEY;
-        System.out.println("检查在线：" + key);
 
         return redisTemplate.opsForSet().isMember(key, userId.toString());
     }

@@ -31,7 +31,6 @@ public class ScanThread implements Runnable{
         while (true) {
 
             Scanner scanner = new Scanner(System.in);
-            System.out.println(">");
             String msg = scanner.nextLine();
 
             PubReq pubReq = new PubReq();

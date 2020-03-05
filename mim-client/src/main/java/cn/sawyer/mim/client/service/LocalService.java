@@ -1,5 +1,7 @@
 package cn.sawyer.mim.client.service;
 
+import cn.sawyer.mim.tool.protocol.MimProtocol;
+
 /**
  * @program: mim
  * @description:
@@ -8,7 +10,7 @@ package cn.sawyer.mim.client.service;
  **/
 public interface LocalService {
 
-    void printNormal(String msg);
+    void printNormal(MimProtocol protocol);
 
     void printSystem(String msg);
 }

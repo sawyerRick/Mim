@@ -4,6 +4,7 @@ import cn.sawyer.mim.router.cache.RouterCache;
 import cn.sawyer.mim.tool.enums.Code;
 import cn.sawyer.mim.tool.protocol.req.LoginReq;
 import cn.sawyer.mim.tool.protocol.req.PubReq;
+import cn.sawyer.mim.tool.protocol.req.RegistryReq;
 import cn.sawyer.mim.tool.result.Results;
 import cn.sawyer.mim.router.service.AccountService;
 import cn.sawyer.mim.router.service.ServerService;
@@ -64,6 +65,8 @@ public class RouterController {
                     System.out.println("跳过了自己...");
                 }
             }
+        } else {
+            System.out.println("不在线");
         }
 
         return Results.newResult(Code.SUCCESS);
@@ -77,14 +80,12 @@ public class RouterController {
         if (loginCode.equals(Code.SUCCESS)) {
             String server = accountService.route(loginReq.getUserId());
             data.put("server", server);
-        } else if (loginCode.equals(Code.DUPLICATE_LOGIN)) {
-            // 重复登录，强制下线
-            accountService.logout(loginReq.getUserId());
-            String server = accountService.route(loginReq.getUserId());
-            data.put("server", server);
+            System.out.println(loginReq.getUsername() + " 登录！");
+        } else {
+            System.out.println("登录错误" + loginCode);
         }
 
-        return Results.newResult(Code.SUCCESS, data);
+        return Results.newResult(loginCode, data);
     }
 
     // 注销
@@ -98,13 +99,15 @@ public class RouterController {
 
     // 注册
     @PostMapping("registry")
-    public Result registry(@RequestBody LoginReq loginReq) {
-        Code registryCode = accountService.registry(loginReq.getUserId(), loginReq.getUsername());
+    public Result registry(@RequestBody RegistryReq registryReq) {
+        Long id = System.nanoTime();
+        Code registryCode = accountService.registry(id, registryReq.getUsername());
         Map<String, Object> data = new HashMap<>();
 
         // 注册
         if (registryCode.equals(Code.SUCCESS)) {
-            data.put("userInfo", loginReq);
+            data.put("username", registryReq.getUsername());
+            data.put("userId", id);
         }
 
         return Results.newResult(Code.SUCCESS, data);

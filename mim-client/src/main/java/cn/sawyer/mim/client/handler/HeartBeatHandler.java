@@ -56,7 +56,7 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
         }
         public void run() {
             MimProtocol heatBeat  = buildHeatBeat();
-            System.out.println("发送心跳..." + new Date().toString());
+            logger.debug("发送心跳..." + new Date().toString());
             ctx.writeAndFlush(heatBeat);
         }
 

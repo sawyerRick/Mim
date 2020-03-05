@@ -21,7 +21,7 @@ public class MimServerConfig {
     @Value("${mim.config.zk.port}")
     Integer zkPort;
 
-    @Value(("${mim.config.server.host}"))
+    @Value("${mim.config.server.host}")
     String host;
 
     @Value("${mim.config.server.port}")
@@ -72,7 +72,7 @@ public class MimServerConfig {
 
     @Override
     public String toString() {
-        return "MimConfig{" +
+        return "MimServerConfig{" +
                 "zkHost='" + zkHost + '\'' +
                 ", zkPort=" + zkPort +
                 ", host='" + host + '\'' +

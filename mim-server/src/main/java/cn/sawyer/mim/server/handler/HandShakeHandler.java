@@ -26,13 +26,12 @@ public class HandShakeHandler extends ChannelInboundHandlerAdapter {
             ctx.writeAndFlush(handshakeResp);
             if (channelMap.containsKey(protocol.getSrcId())) {
                 // 清除重复连接
-                NioSocketChannel cacheChannel = channelMap.get(protocol.getSrcId());
-                System.out.println("清除连接：" + protocol);
+                System.out.println("清除连接：" + protocol.getSrcId());
+                channelMap.get(protocol.getSrcId()).close();
                 channelMap.remove(protocol.getSrcId());
-                cacheChannel.close();
             }
 
-            System.out.println("缓存id-channel :" + protocol.getSrcId() + "- " + ctx.channel().remoteAddress());
+            System.out.println("缓存id-channel :" + protocol.getSrcId() + "-" + ctx.channel().remoteAddress());
             channelMap.put(protocol.getSrcId(), (NioSocketChannel) ctx.channel());
         } else {
             ctx.fireChannelRead(msg);
