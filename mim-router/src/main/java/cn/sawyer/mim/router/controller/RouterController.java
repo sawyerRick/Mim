@@ -1,9 +1,9 @@
 package cn.sawyer.mim.router.controller;
 
-import cn.sawyer.mim.router.cache.RouterCache;
+import cn.sawyer.mim.router.cache.ServerCache;
 import cn.sawyer.mim.tool.enums.Code;
 import cn.sawyer.mim.tool.protocol.req.LoginReq;
-import cn.sawyer.mim.tool.protocol.req.PubReq;
+import cn.sawyer.mim.tool.protocol.req.PshReq;
 import cn.sawyer.mim.tool.protocol.req.RegistryReq;
 import cn.sawyer.mim.tool.result.Results;
 import cn.sawyer.mim.router.service.AccountService;
@@ -37,30 +37,46 @@ public class RouterController {
     ServerService serverService;
 
     @Autowired
-    RouterCache cache;
+    ServerCache cache;
 
     // 私聊
-//    @PostMapping("ptv")
-//    public Result privateMsg(@RequestBody  mimMessage) {
-//
-//
-//        return Results.newResult(Code.SUCCESS);
-//    }
+    @PostMapping("pteMsg")
+    public Result privateMsg(@RequestBody PshReq pshReq) {
+
+        logger.info("私聊请求" + pshReq);
+        Boolean srcOnline = accountService.checkOnline(pshReq.getSrcId());
+        pshReq.setDestId(accountService.parseUserIdByName(pshReq.getDestName()));
+        Boolean destOnline = accountService.checkOnline(pshReq.getDestId());
+
+        if (srcOnline && destOnline) {
+            Map<Long, String> routerMap = accountService.parseRouterMap();
+            String server = routerMap.get(pshReq.getDestId());
+            if (server != null) {
+                serverService.push(pshReq, server);
+            } else {
+                logger.info("无法获取userId:" + pshReq.getDestId() + " 的路由..." + pshReq);
+            }
+        } else {
+            logger.info("不在线...");
+        }
+
+        return Results.newResult(Code.SUCCESS);
+    }
 
     // 群发
     @PostMapping("pubMsg")
-    public Result publicMsg(@RequestBody PubReq pubReq) {
-        System.out.println("群发请求:" + pubReq);
-        boolean online = accountService.checkOnline(pubReq.getSrcId());
+    public Result publicMsg(@RequestBody PshReq pshReq) {
+        System.out.println("群发请求:" + pshReq);
+        boolean online = accountService.checkOnline(pshReq.getSrcId());
         if (online) {
             Map<Long, String> routerMap = accountService.parseRouterMap();
             for (Map.Entry<Long, String> entry : routerMap.entrySet()) {
                 Long destId = entry.getKey();
                 String server = entry.getValue();
                 // 跳过自己
-                if (!destId.equals(pubReq.getSrcId())) {
-                    pubReq.setDestId(destId);
-                    serverService.pub(pubReq, server);
+                if (!destId.equals(pshReq.getSrcId())) {
+                    pshReq.setDestId(destId);
+                    serverService.push(pshReq, server);
                 } else {
                     System.out.println("跳过了自己...");
                 }

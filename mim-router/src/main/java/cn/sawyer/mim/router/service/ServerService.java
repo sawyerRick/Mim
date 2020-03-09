@@ -1,6 +1,6 @@
 package cn.sawyer.mim.router.service;
 
-import cn.sawyer.mim.tool.protocol.req.PubReq;
+import cn.sawyer.mim.tool.protocol.req.PshReq;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public interface ServerService {
 
     String select(List<String> list);
 
-    void pub(PubReq pubReq, String server);
+    void push(PshReq pshReq, String server);
 }

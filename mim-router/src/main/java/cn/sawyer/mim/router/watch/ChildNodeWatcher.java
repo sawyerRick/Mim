@@ -1,6 +1,6 @@
 package cn.sawyer.mim.router.watch;
 
-import cn.sawyer.mim.router.cache.RouterCache;
+import cn.sawyer.mim.router.cache.ServerCache;
 import cn.sawyer.mim.tool.constant.Constants;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -24,7 +24,7 @@ public class ChildNodeWatcher implements Watcher {
     ZooKeeper zooKeeper;
 
     @Autowired
-    RouterCache cache;
+    ServerCache cache;
 
     @Override
     public void process(WatchedEvent event) {

@@ -1,6 +1,6 @@
 package cn.sawyer.mim.router.init;
 
-import cn.sawyer.mim.router.cache.RouterCache;
+import cn.sawyer.mim.router.cache.ServerCache;
 import cn.sawyer.mim.tool.constant.Constants;
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import javax.annotation.PostConstruct;
 public class SystemInit {
 
     @Autowired
-    RouterCache cache;
+    ServerCache cache;
 
     @Autowired
     ZooKeeper zooKeeper;

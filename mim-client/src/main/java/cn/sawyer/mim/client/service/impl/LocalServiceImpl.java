@@ -1,7 +1,10 @@
 package cn.sawyer.mim.client.service.impl;
 
+import cn.sawyer.mim.client.service.AccountService;
 import cn.sawyer.mim.client.service.LocalService;
 import cn.sawyer.mim.tool.protocol.MimProtocol;
+import cn.sawyer.mim.tool.protocol.req.PshReq;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -36,6 +39,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class LocalServiceImpl implements LocalService {
 
+    @Autowired
+    AccountService accountService;
+
     @Override
     public void printNormal(MimProtocol protocol) {
         String line = "\n\u001b[34m" + protocol.getSrcName() + "\u001b[0m:\u001b[36m" + protocol.getMsg() + "\u001b[0m";
@@ -45,5 +51,20 @@ public class LocalServiceImpl implements LocalService {
     @Override
     public void printSystem(String msg) {
         System.out.println(msg);
+    }
+
+    @Override
+    public void commandHandle(PshReq req) {
+        String msg = req.getMsg();
+
+        if (msg.startsWith("@")) {
+            // 私聊
+            String destName = msg.substring(1, msg.indexOf(" "));
+            req.setDestName(destName);
+            accountService.sendPrivateMsg(req);
+        } else {
+            // 群发
+            accountService.sendPublicMsg(req);
+        }
     }
 }

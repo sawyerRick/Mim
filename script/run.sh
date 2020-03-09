@@ -7,7 +7,13 @@ java -jar mim-client/target/mim-client-0.0.1-SNAPSHOT.jar --server.port=9090 --m
 java -jar mim-client/target/mim-client-0.0.1-SNAPSHOT.jar --server.port=9091 --mim.config.userId=2369106717063327 --mim.config.username=sawyer
 
 
+# client3
+java -jar mim-client/target/mim-client-0.0.1-SNAPSHOT.jar --server.port=9092 --mim.config.userId=2662839607342247 --mim.config.username=sawyer2
+
+
 # 注册
 curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"username":"serial"}'  http://localhost:8081/registry
 
 curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"username":"sawyer"}'  http://localhost:8081/registry
+
+curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"username":"sawyer2"}'  http://localhost:8081/registry

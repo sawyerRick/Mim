@@ -4,7 +4,7 @@ import cn.sawyer.mim.server.service.ConnService;
 import cn.sawyer.mim.server.util.ConnSessionCache;
 import cn.sawyer.mim.tool.enums.MsgType;
 import cn.sawyer.mim.tool.protocol.MimProtocol;
-import cn.sawyer.mim.tool.protocol.req.PubReq;
+import cn.sawyer.mim.tool.protocol.req.PshReq;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +19,17 @@ import org.springframework.stereotype.Service;
 public class ConnServiceImpl implements ConnService {
 
     @Override
-    public void send(PubReq pubReq) {
+    public void send(PshReq pshReq) {
         MimProtocol protocol = new MimProtocol();
         protocol.setType(MsgType.MSG_RESP);
-        protocol.setDestId(pubReq.getDestId());
-        protocol.setSrcName(pubReq.getSrcName());
-        protocol.setMsg(pubReq.getMsg());
+        protocol.setDestId(pshReq.getDestId());
+        protocol.setSrcName(pshReq.getSrcName());
+        protocol.setMsg(pshReq.getMsg());
 
         NioSocketChannel channel = ConnSessionCache.channelMap.get(protocol.getDestId());
         System.out.println("Channel cache 容量：" + ConnSessionCache.channelMap.size());
         if (ConnSessionCache.channelMap.size() == 0) {
-            throw new RuntimeException("丢失路由");
+            throw new RuntimeException("丢失路由信息");
         }
 
         if (channel != null) {

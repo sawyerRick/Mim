@@ -6,7 +6,7 @@ import cn.sawyer.mim.tool.model.UserInfo;
 import cn.sawyer.mim.tool.enums.Code;
 import cn.sawyer.mim.tool.protocol.MimProtocol;
 import cn.sawyer.mim.tool.protocol.req.LoginReq;
-import cn.sawyer.mim.tool.protocol.req.PubReq;
+import cn.sawyer.mim.tool.protocol.req.PshReq;
 import cn.sawyer.mim.tool.result.Result;
 import cn.sawyer.mim.client.service.AccountService;
 import com.alibaba.fastjson.JSON;
@@ -87,9 +87,9 @@ public class AccountServiceImpl implements AccountService {
 
     // 群发
     @Override
-    public void sendPublicMsg(PubReq pubReq) {
+    public void sendPublicMsg(PshReq pshReq) {
         try {
-            String msgString = JSONObject.toJSONString(pubReq);
+            String msgString = JSONObject.toJSONString(pshReq);
             RequestBody body = RequestBody.create(MediaType.parse("application/json"), msgString);
             String url = "http://" + appConfig.getRouterHost() + ":" + appConfig.getRouterPort() + "/pubMsg";
             Request loginReq = new Request.Builder()
@@ -100,7 +100,7 @@ public class AccountServiceImpl implements AccountService {
             Response resp = okHttpClient.newCall(loginReq).execute();
 
             if (resp.isSuccessful()) {
-                logger.debug("发送成功:" + pubReq);
+                logger.debug("发送成功:" + pshReq);
                 logger.debug(resp.body().string());
             } else {
                 logger.error("发送失败" + msgString);
@@ -128,6 +128,30 @@ public class AccountServiceImpl implements AccountService {
 
             if (resp.isSuccessful()) {
                 logger.debug("发送成功:" + logoutReq);
+                logger.debug(resp.body().string());
+            } else {
+                logger.error("发送失败" + msgString);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void sendPrivateMsg(PshReq pshReq) {
+        try {
+            String msgString = JSONObject.toJSONString(pshReq);
+            RequestBody body = RequestBody.create(MediaType.parse("application/json"), msgString);
+            String url = "http://" + appConfig.getRouterHost() + ":" + appConfig.getRouterPort() + "/pteMsg";
+            Request loginReq = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+
+            Response resp = okHttpClient.newCall(loginReq).execute();
+
+            if (resp.isSuccessful()) {
+                logger.debug("发送成功:" + pshReq);
                 logger.debug(resp.body().string());
             } else {
                 logger.error("发送失败" + msgString);

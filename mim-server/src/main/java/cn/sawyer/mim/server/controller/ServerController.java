@@ -5,7 +5,7 @@ import cn.sawyer.mim.tool.enums.Code;
 import cn.sawyer.mim.tool.enums.MsgType;
 import cn.sawyer.mim.server.util.ConnSessionCache;
 import cn.sawyer.mim.tool.protocol.MimProtocol;
-import cn.sawyer.mim.tool.protocol.req.PubReq;
+import cn.sawyer.mim.tool.protocol.req.PshReq;
 import cn.sawyer.mim.tool.result.Result;
 import cn.sawyer.mim.tool.result.Results;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -25,14 +25,15 @@ public class ServerController {
     @Autowired
     ConnService connService;
 
-    @PostMapping("pubMsg")
-    public Result pubMsg(@RequestBody PubReq pubReq) {
-        System.out.println("推送请求：" + pubReq);
-        connService.send(pubReq);
+    @PostMapping("push")
+    public Result pubMsg(@RequestBody PshReq pshReq) {
+        System.out.println("推送请求：" + pshReq);
+        connService.send(pshReq);
 
         return Results.newResult(Code.SUCCESS);
     }
 
+    // 手动测试回应
     @GetMapping("back")
     public String sendBack() {
         int time = 0;

@@ -1,13 +1,10 @@
 package cn.sawyer.mim.router.service.impl;
 
-import cn.sawyer.mim.router.cache.RouterCache;
+import cn.sawyer.mim.router.cache.ServerCache;
 import cn.sawyer.mim.router.service.AccountService;
 import cn.sawyer.mim.router.service.ServerService;
 import cn.sawyer.mim.tool.constant.Constants;
-import cn.sawyer.mim.tool.model.ServerInfo;
-import cn.sawyer.mim.tool.model.UserInfo;
 import cn.sawyer.mim.tool.enums.Code;
-import jdk.nashorn.internal.runtime.linker.Bootstrap;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
     ServerService serverService;
 
     @Autowired
-    RouterCache cache;
+    ServerCache cache;
 
     @Override
     public Code login(Long userId, String username){
@@ -131,4 +128,17 @@ public class AccountServiceImpl implements AccountService {
         return map;
     }
 
+    @Override
+    public Long parseUserIdByName(String name) {
+
+        Long userId;
+        String id = redisTemplate.opsForValue().get(Constants.ACCOUNT_PREFIX + name);
+        if (id == null) {
+            userId = 0L;
+        } else {
+            userId = Long.parseLong(id);
+        }
+
+        return userId;
+    }
 }

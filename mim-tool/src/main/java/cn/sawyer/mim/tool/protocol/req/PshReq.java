@@ -6,13 +6,15 @@ package cn.sawyer.mim.tool.protocol.req;
  * @author: sawyer
  * @create: 2020-02-27 16:25
  **/
-public class PubReq {
+public class PshReq {
 
     Long srcId;
 
     Long destId;
 
     String srcName;
+
+    String destName;
 
     String msg;
 
@@ -48,12 +50,21 @@ public class PubReq {
         this.destId = destId;
     }
 
+    public String getDestName() {
+        return destName;
+    }
+
+    public void setDestName(String destName) {
+        this.destName = destName;
+    }
+
     @Override
     public String toString() {
         return "PubReq{" +
                 "srcId=" + srcId +
                 ", destId=" + destId +
                 ", srcName='" + srcName + '\'' +
+                ", destName='" + destName + '\'' +
                 ", msg='" + msg + '\'' +
                 '}';
     }

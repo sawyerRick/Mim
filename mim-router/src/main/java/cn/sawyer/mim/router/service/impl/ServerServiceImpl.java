@@ -3,7 +3,7 @@ package cn.sawyer.mim.router.service.impl;
 import cn.sawyer.mim.router.config.MimRouterConfig;
 import cn.sawyer.mim.router.service.ServerService;
 import cn.sawyer.mim.tool.model.ServerInfo;
-import cn.sawyer.mim.tool.protocol.req.PubReq;
+import cn.sawyer.mim.tool.protocol.req.PshReq;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,23 +42,23 @@ public class ServerServiceImpl implements ServerService {
     }
 
     @Override
-    public void pub(PubReq pubReq, String server) {
+    public void push(PshReq pshReq, String server) {
         try {
             ServerInfo serverInfo = new ServerInfo(server);
-            String msgString = JSONObject.toJSONString(pubReq);
+            String msgString = JSONObject.toJSONString(pshReq);
             RequestBody body = RequestBody.create(MediaType.parse("application/json"), msgString);
-            String url = "http://" + serverInfo.getHost() + ":" + serverInfo.getHttpPort() + "/pubMsg";
+            String url = "http://" + serverInfo.getHost() + ":" + serverInfo.getHttpPort() + "/push";
             Request loginReq = new Request.Builder()
                     .url(url)
                     .post(body)
                     .build();
-            System.out.println("url:" + url);
+//            System.out.println("url:" + url);
             Response disResp = okHttpClient.newCall(loginReq).execute();
             System.out.println("发送响应：" + disResp.body().string());
             if (disResp.isSuccessful()) {
-                System.out.println("发送成功:" + msgString + " pub to" + serverInfo);
+                System.out.println("发送成功:" + msgString + " push to" + serverInfo);
             } else {
-                System.out.println("发送失败" + msgString + " pub to" + serverInfo);
+                System.out.println("发送失败" + msgString + " push to" + serverInfo);
             }
         } catch (Exception e) {
             e.printStackTrace();

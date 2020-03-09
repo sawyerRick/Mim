@@ -1,6 +1,6 @@
 package cn.sawyer.mim.server.service;
 
-import cn.sawyer.mim.tool.protocol.req.PubReq;
+import cn.sawyer.mim.tool.protocol.req.PshReq;
 
 /**
  * @program: mim
@@ -10,6 +10,6 @@ import cn.sawyer.mim.tool.protocol.req.PubReq;
  **/
 public interface ConnService {
 
-    void send(PubReq pubReq);
+    void send(PshReq pshReq);
 
 }

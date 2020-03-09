@@ -26,4 +26,6 @@ public interface AccountService {
     Boolean checkOnline(Long userId);
 
     Map<Long, String> parseRouterMap();
+
+    Long parseUserIdByName(String name);
 }

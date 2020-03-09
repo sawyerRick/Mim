@@ -1,6 +1,5 @@
 package cn.sawyer.mim.client.cache;
 
-import cn.sawyer.mim.tool.model.ServerInfo;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 /**
